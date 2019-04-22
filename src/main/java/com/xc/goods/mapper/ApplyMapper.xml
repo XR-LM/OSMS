@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.goods.mapper.ApplyMapper">
+
+	<!-- 一对多映射 -->
+	<resultMap id="applyResultMap" type="com.xc.goods.pojo.Apply">
+		<id column="pid" jdbcType="BIGINT" property="id" />
+		<result column="apply_num" jdbcType="VARCHAR"
+			property="applyNum" />
+		<result column="apply_unit" jdbcType="INTEGER"
+			property="applyUnit" />
+		<result column="apply_state" jdbcType="INTEGER"
+			property="applyState" />
+		<result property="user.userName" column="user_name" />
+		<result property="article.articleType" column="article_type" />
+		<result property="article.articleName" column="article_name" />
+		<result property="article.stockUnit" column="stock_unit" />
+
+	</resultMap>
+
+
+	<select id="selectApplyList" resultMap="applyResultMap"
+		parameterType="com.xc.goods.util.ApplyQueryParams">
+		SELECT
+		p.id pid,
+		u.user_name ,
+		t.article_name,
+		t.article_type,
+		p.apply_num,
+		t.stock_unit,
+		p.apply_state,
+		p.apply_date
+		FROM
+		apply p LEFT JOIN article t ON p.article_id = t.id
+		LEFT JOIN `user` u ON p.user_id = u.id
+		<where>
+			<if test="applyState != null">
+				and p.apply_state=#{applyState}
+			</if>
+			<if test="userName != null and userName !='' and userName !='申请人'">
+				and u.user_name like concat('%', #{userName}, '%')
+			</if>
+			<if
+				test="articleType != null and articleType !='' and articleType !=0">
+				and t.article_type=#{articleType}
+			</if>
+			<if
+				test="articleName != null and articleName !='' and articleName !='物品名称'">
+				and t.article_name like concat('%', #{articleName}, '%')
+			</if>
+			<if
+				test="applyDate != null and applyDate !='' and applyDate !='请选择时间'">
+				and p.apply_date=#{applyDate}
+			</if>
+
+		</where>
+	</select>
+
+	<!-- 结果集-->
+	<resultMap id="applyResultMap1" type="com.xc.goods.util.ApplyResult">
+		<id column="pid" jdbcType="BIGINT" property="id" />
+		<result column="apply_num" jdbcType="VARCHAR" property="applyNum" />
+		<result column="apply_date" jdbcType="INTEGER" property="applyDate" />
+		<result  column="user_name"    property="applyName"  />
+		<result  column="article_type" property="articleType"/>
+		<result  column="article_name" property="articleName"/>
+		<result  column="tid"   property="articleId"  />
+		<result  column="stock_unit"   property="stockUnit"  />
+		<result  column="apply_reason"   property="applyReason"  />
+
+	</resultMap>
+	<select id="selectApplyQueryParams" resultMap="applyResultMap1"
+		parameterType="long">
+		SELECT
+		p.id pid,
+		u.user_name ,
+		t.id tid,
+		t.article_name,
+		t.article_type,
+		p.apply_num,
+		t.stock_unit,
+		p.apply_state,
+		p.apply_date,
+		p.apply_reason
+		FROM
+		apply p LEFT JOIN article t ON p.article_id = t.id
+		LEFT JOIN `user` u ON p.user_id = u.id where p.id=#{id}
+	</select>
+
+
+
+
+
+	<resultMap id="BaseResultMap" type="com.xc.goods.pojo.Apply">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="article_id" jdbcType="BIGINT"
+			property="articleId" />
+		<result column="apply_num" jdbcType="VARCHAR"
+			property="applyNum" />
+		<result column="apply_unit" jdbcType="INTEGER"
+			property="applyUnit" />
+		<result column="apply_date" jdbcType="VARCHAR"
+			property="applyDate" />
+		<result column="apply_state" jdbcType="INTEGER"
+			property="applyState" />
+	</resultMap>
+	<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+		type="com.xc.goods.pojo.Apply">
+		<result column="apply_reason" jdbcType="LONGVARCHAR"
+			property="applyReason" />
+	</resultMap>
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value} and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value"
+										item="listItem" open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Update_By_Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value} and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach close=")" collection="criterion.value"
+										item="listItem" open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Base_Column_List">
+		id, user_id, article_id, apply_num, apply_unit, apply_date, apply_state
+	</sql>
+	<sql id="Blob_Column_List">
+		apply_reason
+	</sql>
+	<select id="selectByExampleWithBLOBs"
+		parameterType="com.xc.goods.pojo.ApplyExample"
+		resultMap="ResultMapWithBLOBs">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from apply
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+	</select>
+	<select id="selectByExample"
+		parameterType="com.xc.goods.pojo.ApplyExample"
+		resultMap="BaseResultMap">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from apply
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+	</select>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long"
+		resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from apply
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from apply
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<delete id="deleteByExample"
+		parameterType="com.xc.goods.pojo.ApplyExample">
+		delete from apply
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</delete>
+	<insert id="insert" parameterType="com.xc.goods.pojo.Apply">
+		insert into apply (id, user_id, article_id,
+		apply_num, apply_unit, apply_date,
+		apply_state, apply_reason)
+		values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
+		#{articleId,jdbcType=BIGINT},
+		#{applyNum,jdbcType=VARCHAR}, #{applyUnit,jdbcType=INTEGER}, #{applyDate,jdbcType=VARCHAR},
+		#{applyState,jdbcType=INTEGER}, #{applyReason,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.xc.goods.pojo.Apply">
+		insert into apply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="articleId != null">
+				article_id,
+			</if>
+			<if test="applyNum != null">
+				apply_num,
+			</if>
+			<if test="applyUnit != null">
+				apply_unit,
+			</if>
+			<if test="applyDate != null">
+				apply_date,
+			</if>
+			<if test="applyState != null">
+				apply_state,
+			</if>
+			<if test="applyReason != null">
+				apply_reason,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="articleId != null">
+				#{articleId,jdbcType=BIGINT},
+			</if>
+			<if test="applyNum != null">
+				#{applyNum,jdbcType=VARCHAR},
+			</if>
+			<if test="applyUnit != null">
+				#{applyUnit,jdbcType=INTEGER},
+			</if>
+			<if test="applyDate != null">
+				#{applyDate,jdbcType=VARCHAR},
+			</if>
+			<if test="applyState != null">
+				#{applyState,jdbcType=INTEGER},
+			</if>
+			<if test="applyReason != null">
+				#{applyReason,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<select id="countByExample"
+		parameterType="com.xc.goods.pojo.ApplyExample"
+		resultType="java.lang.Integer">
+		select count(*) from apply
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+	<update id="updateByExampleSelective" parameterType="map">
+		update apply
+		<set>
+			<if test="record.id != null">
+				id = #{record.id,jdbcType=BIGINT},
+			</if>
+			<if test="record.userId != null">
+				user_id = #{record.userId,jdbcType=BIGINT},
+			</if>
+			<if test="record.articleId != null">
+				article_id = #{record.articleId,jdbcType=BIGINT},
+			</if>
+			<if test="record.applyNum != null">
+				apply_num = #{record.applyNum,jdbcType=VARCHAR},
+			</if>
+			<if test="record.applyUnit != null">
+				apply_unit = #{record.applyUnit,jdbcType=INTEGER},
+			</if>
+			<if test="record.applyDate != null">
+				apply_date = #{record.applyDate,jdbcType=VARCHAR},
+			</if>
+			<if test="record.applyState != null">
+				apply_state = #{record.applyState,jdbcType=INTEGER},
+			</if>
+			<if test="record.applyReason != null">
+				apply_reason = #{record.applyReason,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExampleWithBLOBs" parameterType="map">
+		update apply
+		set id = #{record.id,jdbcType=BIGINT},
+		user_id = #{record.userId,jdbcType=BIGINT},
+		article_id = #{record.articleId,jdbcType=BIGINT},
+		apply_num = #{record.applyNum,jdbcType=VARCHAR},
+		apply_unit = #{record.applyUnit,jdbcType=INTEGER},
+		apply_date = #{record.applyDate,jdbcType=VARCHAR},
+		apply_state = #{record.applyState,jdbcType=INTEGER},
+		apply_reason = #{record.applyReason,jdbcType=LONGVARCHAR}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExample" parameterType="map">
+		update apply
+		set id = #{record.id,jdbcType=BIGINT},
+		user_id = #{record.userId,jdbcType=BIGINT},
+		article_id = #{record.articleId,jdbcType=BIGINT},
+		apply_num = #{record.applyNum,jdbcType=VARCHAR},
+		apply_unit = #{record.applyUnit,jdbcType=INTEGER},
+		apply_date = #{record.applyDate,jdbcType=VARCHAR},
+		apply_state = #{record.applyState,jdbcType=INTEGER}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.xc.goods.pojo.Apply">
+		update apply
+		<set>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=BIGINT},
+			</if>
+			<if test="articleId != null">
+				article_id = #{articleId,jdbcType=BIGINT},
+			</if>
+			<if test="applyNum != null">
+				apply_num = #{applyNum,jdbcType=VARCHAR},
+			</if>
+			<if test="applyUnit != null">
+				apply_unit = #{applyUnit,jdbcType=INTEGER},
+			</if>
+			<if test="applyDate != null">
+				apply_date = #{applyDate,jdbcType=VARCHAR},
+			</if>
+			<if test="applyState != null">
+				apply_state = #{applyState,jdbcType=INTEGER},
+			</if>
+			<if test="applyReason != null">
+				apply_reason = #{applyReason,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs"
+		parameterType="com.xc.goods.pojo.Apply">
+		update apply
+		set user_id = #{userId,jdbcType=BIGINT},
+		article_id = #{articleId,jdbcType=BIGINT},
+		apply_num = #{applyNum,jdbcType=VARCHAR},
+		apply_unit = #{applyUnit,jdbcType=INTEGER},
+		apply_date = #{applyDate,jdbcType=VARCHAR},
+		apply_state = #{applyState,jdbcType=INTEGER},
+		apply_reason = #{applyReason,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.xc.goods.pojo.Apply">
+		update apply
+		set user_id = #{userId,jdbcType=BIGINT},
+		article_id = #{articleId,jdbcType=BIGINT},
+		apply_num = #{applyNum,jdbcType=VARCHAR},
+		apply_unit = #{applyUnit,jdbcType=INTEGER},
+		apply_date = #{applyDate,jdbcType=VARCHAR},
+		apply_state = #{applyState,jdbcType=INTEGER}
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+</mapper>

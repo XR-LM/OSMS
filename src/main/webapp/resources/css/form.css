@@ -1,0 +1,45 @@
+table tr td:first-child p{
+    width: 110px;
+    background: rgb(242, 242, 242);
+    text-align: center;
+    font-family: '΢���ź� Regular', '΢���ź�';
+    font-size: 14px;
+    height: 35px;
+    line-height: 35px;
+}
+table tr td input {
+    padding: 1px 0px 1px 0px;
+    box-sizing: border-box;
+    height: 35px;
+    -moz-box-sizing: border-box;
+    margin-left: -18px;
+    border-left: none;
+    border-color: #f2f2f2;
+    border-top: solid;
+    border-top-color: #f2f2f2;
+}
+table tr{
+    height: 20px;
+}
+#articleDescribe{
+    margin-left: 0px;
+    margin-top: -13px;
+    height: 96px;
+    width: 400px;
+    border: solid;
+    border-left-color: #f2f2f2;
+    border-color:#f2f2f2;
+    border-top: none;
+
+}
+#applyReason {
+    margin-left: 0px;
+    margin-top: -13px;
+    height: 96px;
+    width: 400px;
+    border: solid;
+    border-left-color: #f2f2f2;
+    border-color:#f2f2f2;
+    border-top: none;
+
+}

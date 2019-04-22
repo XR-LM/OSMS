@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 1. 配置SecurityManager -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="cacheManager" ref="cacheManager" />
+        <property name="authenticator" ref="authenticator"/>
+        <!-- 可以配置多个Realm，其实会把realms属性赋值给ModularRealmAuthenticator的realms属性 -->
+        <property name="realms">
+            <list>
+                <ref bean="userRealm" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- 2. 配置CacheManager -->
+    <!-- 2.1 需要加入ehcache的jar包及配置文件 -->
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:ehcache.xml" />
+    </bean>
+
+    <!-- 3. 配置Realm -->
+    <!-- 3.1 直接配置继承了org.apache.shiro.realm.AuthorizingRealm的bean -->
+    <bean id="userRealm" class="com.xc.goods.pojo.UserRealm">
+    </bean>
+
+
+    <!-- 6. 配置ShiroFilter -->
+    <!-- 6.1 id必须和web.xml中配置的DelegatingFilterProxy的<filter-name>一致。 如果不一致，会抛出NoSuchBeanDefinitionException异常，因为shiro会在IOC容器中查找名称和<filter-name>
+        值一致的filter bean -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager" />
+        <property name="loginUrl" value="/login" />
+        <property name="unauthorizedUrl" value="/login" />
+        <!-- 配置哪些页面需要受保护，以及访问这些页面需要的权限 -->
+        <property name="filterChainDefinitions">
+            <value>
+                <!-- 第一次匹配优先的原则 -->
+                /userlogin =anon
+                /files/** =anon
+                /data/** =anon
+                /resources/** =anon
+                /images/** =anon
+                /js/** =anon
+
+<!--                /apply/ok =authc
+                /apply/oks =authc
+                /apply/rej =authc
+                /apply/rejs =authc
+
+                /goods/list =authc
+                /goods/findbyid =authc
+                /css/** =anon
+                /apply/list =authc
+                /apply.html =roles[2]
+                /apply/** = roles[2]-->
+
+                /** = authc
+            </value>
+        </property>
+    </bean>
+
+<!--    7. 配置ModularRealmAuthenticator，可以实现多Realm认证 -->
+    <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
+        <!--配置认证策略，只要有一个Realm认证成功即可，并且返回所有认证成功信息-->
+        <property name="authenticationStrategy">
+            <bean class="org.apache.shiro.authc.pam.AllSuccessfulStrategy"></bean>
+        </property>
+    </bean>
+</beans>
